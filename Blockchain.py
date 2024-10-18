@@ -42,9 +42,12 @@ class Blockchain:
 def testBlockchain():
 	privateKey = SigningKey.generate(curve=NIST256p)
 
-	tx1 = Transaction("SenderAddress1", {"ReceiverAddress1": 0.5}, privateKey)
-	tx2 = Transaction("SenderAddress2", {"ReceiverAddress2": 0.3}, privateKey)
-	tx3 = Transaction("SenderAddress3", {"ReceiverAddress3": 0.2}, privateKey)
+	tx1 = Transaction("SenderAddress1", {"ReceiverAddress1": 0.5}, 0.1,
+	                  privateKey)
+	tx2 = Transaction("SenderAddress2", {"ReceiverAddress2": 0.3}, 0.1,
+	                  privateKey)
+	tx3 = Transaction("SenderAddress3", {"ReceiverAddress3": 0.2}, 0.1,
+	                  privateKey)
 
 	block1 = Block(version="1.0",
 	               prevHash="0" * 64,

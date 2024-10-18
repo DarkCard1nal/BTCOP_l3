@@ -25,6 +25,10 @@ class Node:
 		return self.__blockchain.GetLastBlock().Hash
 
 	@property
+	def BlockchainCount(self):
+		return self.__blockchain.Count
+
+	@property
 	def Version(self):
 		return self.__version
 
@@ -70,9 +74,11 @@ class Node:
 		self.__version = version
 
 	def AddBlock(self, block):
+		if block.Hash == self.BlockchainHashLastBlock:
+			return True
 		try:
 			self.__blockchain.AddBlock(block)
-			return None
+			return block
 		except ValueError as e:
 			return f"ValueError occurred: {e}"
 
@@ -81,7 +87,7 @@ class Node:
 		nonce = 0
 		block = Block(self.__version,
 		              self.__blockchain.GetLastBlock().Hash, self.__target,
-		              self.__transactions, 0, self.__privateKey)
+		              self.__transactions, nonce, self.__privateKey)
 		block.AddTransactions(
 		    Transaction('',
 		                {self.__addres: self.__reward + block.AllCommission}, 0,
@@ -128,7 +134,9 @@ def testNode():
 	assert len(node.Transactions) == 2, "Expected 2 transactions in Node"
 
 	miningResult = node.MineBlock()
-	assert miningResult is None, f"Expected no error while mining block, got: {miningResult}"
+	assert isinstance(
+	    miningResult,
+	    Block), f"Expected no error while mining block, got: {miningResult}"
 
 	lastBlock = node.Blockchain.GetLastBlock()
 	assert lastBlock.Hash is not None, "Last Block Hash should not be None"
