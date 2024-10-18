@@ -7,9 +7,14 @@ from Signature import Signature
 
 class Transaction:
 
-	def __init__(self, input_address, outputs={}, privateKey=None):
+	def __init__(self,
+	             input_address,
+	             outputs={},
+	             commission=0,
+	             privateKey=None):
 		self.__input = input_address
 		self.__outputs = outputs.copy()
+		self.__commission = commission
 		self.__txTimestamp = datetime.now()
 		self.__txHash = self.CalculateHash()
 		self.__signature = self.UpdateSignature(privateKey)
@@ -21,6 +26,10 @@ class Transaction:
 	@property
 	def Outputs(self):
 		return self.__outputs.copy()
+
+	@property
+	def Commission(self):
+		return self.__commission
 
 	@property
 	def Signature(self):
@@ -39,6 +48,10 @@ class Transaction:
 
 	def AddOutputs(self, outputs):
 		self.__outputs.update(outputs)
+		self.UpdateHash()
+
+	def UpdateComission(self, commission):
+		self.__commission = commission
 		self.UpdateHash()
 
 	def CalculateHash(self):
@@ -83,7 +96,7 @@ class Transaction:
 
 	def StrNoSignatureAndHash(self):
 		return (
-		    f"Transaction\nInput: {self.__input}, Outputs: {self.__outputs}, "
+		    f"Transaction\nInput: {self.__input}, Outputs: {self.__outputs}, Comission: {self.__commission}"
 		    f"TotalAmount: {self.GetTotalAmount()}, Timestamp: {self.__txTimestamp}"
 		)
 
@@ -111,6 +124,7 @@ def testTransaction():
 	print("\nSignature verification passed.")
 
 	tx.AddOutput("3ReceiverAddress", 0.2)
+	tx.UpdateComission(0.01)
 
 	print("\nTransaction after adding an output:")
 	print(tx)
