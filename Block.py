@@ -64,8 +64,17 @@ class Block:
 	def Signature(self):
 		return self.__signature
 
+	@property
+	def AllCommission(self):
+		return sum(
+		    transaction.Commission for transaction in self.__transactions)
+
 	def AddTransactions(self, transactions):
-		self.__transactions.append(transactions)
+		if isinstance(transactions, list):
+			self.__transactions.extend(transactions)
+		else:
+			self.__transactions.append(transactions)
+
 		self.UpdateMerkleRoot()
 
 	def UpdateMerkleRoot(self):
@@ -125,6 +134,18 @@ class Block:
 		publicKeyBase64 = obj['publicKey']
 		signatureBase64 = obj['signature']
 		message = obj['message']
+
+		return Signature.Verify(signatureBase64, message, publicKeyBase64)
+
+	def VerifyBlock(self):
+		if not self.VerifyHash() or not self.VerifySignature():
+			return False
+
+		currentHash = self.CalculateHash()
+		obj = json.loads(self.__signature)
+		publicKeyBase64 = obj['publicKey']
+		signatureBase64 = obj['signature']
+		message = f"{self.StrNoSignatureAndHash()}, Hash: {currentHash}"
 
 		return Signature.Verify(signatureBase64, message, publicKeyBase64)
 

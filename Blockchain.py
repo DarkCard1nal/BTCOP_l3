@@ -8,6 +8,10 @@ class Blockchain:
 	def __init__(self):
 		self.__blocks = []
 
+	@property
+	def Count(self):
+		return len(self.__blocks)
+
 	def AddBlock(self, block):
 		if not isinstance(block, Block):
 			raise ValueError("Only Block instances can be added.")
@@ -17,6 +21,9 @@ class Blockchain:
 			if block.PrevHash != last_block.Hash:
 				raise ValueError(
 				    "Block's PrevHash does not match the last block's Hash.")
+
+		if not block.VerifyBlock():
+			raise ValueError("Block has not passed verification")
 
 		self.__blocks.append(block)
 
