@@ -9,17 +9,20 @@ from Transaction import Transaction
 
 class Block:
 
-	def __init__(self,
-	             version,
-	             prevHash,
-	             target,
-	             transactions=[],
-	             privateKey=None):
+	def __init__(
+	    self,
+	    version,
+	    prevHash,
+	    target,
+	    transactions=[],
+	    nonce=0,
+	    privateKey=None,
+	):
 		self.__version = version
 		self.__prevHash = prevHash
 		self.__timestamp = datetime.now()
 		self.__target = target
-		self._nonce = secrets.randbits(32)
+		self.__nonce = nonce
 		self.__transactions = transactions
 		self.__merkleRoot = self.UpdateMerkleRoot()
 		self.__hash = self.UpdateHash()
@@ -43,7 +46,7 @@ class Block:
 
 	@property
 	def Nonce(self):
-		return self._nonce
+		return self.__nonce
 
 	@property
 	def MerkleRoot(self):
@@ -96,7 +99,9 @@ class Block:
 		txData = self.StrNoSignatureAndHash()
 		return hashlib.sha256(txData.encode()).hexdigest()
 
-	def UpdateHash(self):
+	def UpdateHash(self, nonce=None):
+		if nonce != None:
+			self.__nonce = nonce
 		self.__timestamp = datetime.now()
 		self.__hash = self.CalculateHash()
 		return self.__hash
@@ -133,7 +138,7 @@ class Block:
 		return (
 		    f"Block\nVersion: {self.__version}, PreviousBlockHash: {self.__prevHash}, "
 		    f"Timestamp: {self.__timestamp}, DificultyTarget: {self.__target}, "
-		    f"Nonce: {self._nonce}, MerkleRoot: {self.__merkleRoot}")
+		    f"Nonce: {self.__nonce}, MerkleRoot: {self.__merkleRoot}")
 
 
 def testBlock():
